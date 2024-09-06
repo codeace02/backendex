@@ -1,0 +1,32 @@
+express : is a package. Server se jo b request aa rhi h ya jo response ja rha h ye sb express hi handle krta h. 
+
+echo "# backendex" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git branch -M main
+git remote add origin https://github.com/codeace02/backendex.git
+git push -u origin main
+
+
+frontend=> npm create vite@latest . => React => Javascript
+
+Cors=> cross origin 
+
+Agr apka url alg h to b use cross origin mana jata h
+Agr apka port no alg h to b "" "" "" ""
+origin diff pe b "" "" ""
+
+1 sol => Apne frontend origin ko backend pe whitelist kr do
+2 sol => proxy lgao
+
+3=> in server.js => use middleware => app.use(cors())
+
+
+MONGOOSE => 
+
+Moon modeler=> is used for data modeling
+
+eraser.io
+stackblitz
+

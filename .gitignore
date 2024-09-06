@@ -45,7 +45,6 @@ Thumbs.db
 *.env
 *.pem
 *out
-*notes.txt
 
 package-lock.json
 yarn.lock
