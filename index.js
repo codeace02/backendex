@@ -1,6 +1,6 @@
 require('dotenv').config();
 
-const express = require('express');
+const express = require('express'); // common js, synchronously working
 const app = express();
 
 const dummydata = {
