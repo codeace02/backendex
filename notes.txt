@@ -33,3 +33,5 @@ stackblitz
 ecommerce model order=> 1. user 2. category 3. product 4. order
 
 for downloading any dev dependency => npm i -D packagename i.e development dependency
+
+jwt is a bearer token , i.e, ye token jiske b pas h agr wo mujhe request bhejega to mai data bhej dunga
