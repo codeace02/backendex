@@ -35,3 +35,74 @@ ecommerce model order=> 1. user 2. category 3. product 4. order
 for downloading any dev dependency => npm i -D packagename i.e development dependency
 
 jwt is a bearer token , i.e, ye token jiske b pas h agr wo mujhe request bhejega to mai data bhej dunga
+
+================================================HTTP========================================================
+
+url=> uniform resource locator (ki kha pe location h uski)
+uri=> identifier
+urn=> name
+
+http headers :=> metadata -------> key-value sent along with request & response
+
+headers working (bht sare hote h e.g.->) => caching, authentication, manage state
+
+1. Request Headers => from client
+2. Response Headers => From Server
+3. Represent Headers => encoding/compression
+4. Payload Headers => data
+
+Most common headers =>
+
+1. Accept : application/json
+2. User-Agent : it tells ki kon si application se request aai h e.g postman se aai h ya kis browser s aai h ya kis os s aai h etc
+3. Authorization : Bearer ____________________________ 
+4. Content-Type : image/video....
+5. Cookie :  key-value pair
+6. Cache-Control : data kb expire krana h
+
+CORS headers =>
+Access-Control-Allow-Origin
+Access-Control-Allow-Credentials
+Access-Control-Allow-Method
+
+SECURITY headers=>
+Cross-Origin-Embedder-Policy
+Cross-Origin-Opener-Policy
+Cross-Security-Policy
+X-XSS-Protection
+
+http methods : Basic set of operations that can be used to interact with server
+
+1. GET : Retrieve a resource
+2. HEAD : No msg body (response headers only)
+3. OPTIONS : What operations are available
+4. TRACE : Loopback test (get same data) , used for debugging
+5. DELETE : Remove a resource 
+6. PUT : Replace a resource
+7. POST : Interact with resource (Mostly add)
+8. PATCH : Change part of a resource
+
+<==================================>
+      https status code
+<==================================>
+
+a=> 1xx : Informational (ise user ko sirf information bhejne k liye use krte h)
+b=> 2xx : Success
+c=> 3xx : Redirection
+d=> 4xx : Client Error
+e=> 5xx : Server Error
+
+
+[1] 100 : Continue
+[2] 102 : Processing
+[3] 200 : Ok
+[3] 201 : Created
+[4] 202 : Accepted
+[5] 307 : Temporary Redirect
+[6] 308 : Permanent Redirect
+[7] 400 : Bad Request
+[8] 401 : Unauthorized
+[9] 402 : Payment Redirect
+[10] 404 : Not Found
+[11] 500 : Internal Server Error
+[12] 504 : Gateway Time Out
