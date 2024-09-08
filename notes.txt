@@ -106,3 +106,9 @@ e=> 5xx : Server Error
 [10] 404 : Not Found
 [11] 500 : Internal Server Error
 [12] 504 : Gateway Time Out
+
+
+
+
+User Controller
+User.Routes.js

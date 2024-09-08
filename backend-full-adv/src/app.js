@@ -19,4 +19,14 @@ app.use(express.static("public"));
 
 app.use(cookieParser()); // mere server se user k browser ki cookies ko access kr pau
 
+// routes import
+
+import userRouter from "./routes/user.routes.js";
+
+
+// routes declaration
+
+app.use("/api/v1/users", userRouter)
+
+
 export { app };
