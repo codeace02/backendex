@@ -4,6 +4,22 @@ import { User } from "../models/user.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
+const generateAccessAndRefreshTokens = async (userId) => {
+    try {
+        const user = await User.findById(userId);
+        const accessToken = user.generateAccessToken()
+        const refreshToken = user.generateRefreshToken()
+
+        user.refreshToken = refreshToken
+        await user.save({ validateBeforeSave: false })
+
+        return { accessToken, refreshToken }
+
+    } catch (error) {
+        throw new ApiError(500, "Something went wrong while generating access & refresh tokens")
+    }
+}
+
 const registerUser = asyncHandler(async (req, res) => {
 
     // get user details from frontend
@@ -77,4 +93,89 @@ const registerUser = asyncHandler(async (req, res) => {
 
 })
 
-export { registerUser }
+const loginUser = asyncHandler(async (req, res) => {
+
+    // req body => data
+    // username or email
+    // find user
+    // check password
+    // access & refresh token
+    // send cookies (secure cookie)
+
+    const { email, username, password } = req?.body;
+
+    if (!(username || email)) {
+        throw new ApiError(400, "username or email is required!")
+    }
+
+    const user = await User.findOne({
+        $or: [{ username }, { email }] //$or => mongodb operator
+    });
+
+    if (!user) {
+        throw new ApiError(404, "User does not exist!")
+    }
+
+    // User mongoose ka object h, mongoose ke methods ko acces kr skte h ispe
+    // isPasswordCorrect ko use krne ke liye hmara user use krna pdega i.e "user"
+
+    const isPasswordValid = await user.isPasswordCorrect(password);
+
+    if (!isPasswordValid) {
+        throw new ApiError(401, "user invalid credentials!")
+    }
+
+    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user?._id);
+
+    // send in cookies=>
+
+    const loggedInUser = await User.findById(user?._id).select("-password -refreshToken")
+
+    const options = {
+        httpOnly: true,
+        secure: true
+    }
+
+    // cookie ka by-default ye nature hota h ki frontend se koi b access kr skta h, ise rokne ke liye httpOnly :true & secure: true kr dete h, fir wo cookies sirf server se modifiable hoti h 
+
+    return res
+        .status(200)
+        .cookie("accessToken", accessToken, options)
+        .cookie("refreshToken", refreshToken, options)
+        .json(
+            new ApiResponse(
+                200,
+                {
+                    user: loggedInUser, accessToken, refreshToken
+                },
+                "User logged in successfully!"
+            )
+        )
+})
+
+const logoutUser = asyncHandler(async (req, res) => {
+    await User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set: {
+                refreshToken: undefined
+            }
+        },
+        {
+            new: true
+        }
+    )
+
+    const options = {
+        httpOnly: true,
+        secure: true
+    }
+
+    return res
+        .status(200)
+        .clearCookie("accessToken", options)
+        .clearCookie("refreshToken", options)
+        .json(new ApiResponse(200, {}, "User logged out!"))
+})
+
+export { registerUser, loginUser, logoutUser }
