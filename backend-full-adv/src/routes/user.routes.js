@@ -18,4 +18,8 @@ router.route("/register").post(
     registerUser
 );
 
+router.route("/register").get((req, res) => {
+    res.send('<h1> Register page </h1>')
+})
+
 export default router;

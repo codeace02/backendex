@@ -22,10 +22,10 @@ const registerUser = asyncHandler(async (req, res) => {
     if (
         [fullName, email, password, username].some(item => item?.trim() === "")
     ) {
-        throw new ApiError(400, `All fields are required`)
+        throw new ApiError(400, `All fields are required`);
     }
 
-    const existedUser = User.findOne({
+    const existedUser = await User.findOne({
         $or: [{ email }, { username }]
     })
 
@@ -35,8 +35,8 @@ const registerUser = asyncHandler(async (req, res) => {
 
     // for extracting files => we can use req.files, multer gives this access to extract it from req directly . as we've already used middleware for file in user.routes  upload.fields([{name: 'avatar', maxCount: 1},{ name: 'coverImage', maxCount: 1 }]),
 
-    const avatarLocalPath = req.files?.avatar[0]?.path;
-    const coverImageLocalPath = req.files?.coverImage[0]?.path;
+    const avatarLocalPath = (req?.files && Array.isArray(req?.files?.avatar) && req?.files?.avatar?.length) ? req?.files?.avatar[0]?.path : null;
+    const coverImageLocalPath = (req?.files && Array.isArray(req?.files?.coverImage)) ? req?.files?.coverImage?.path : null;
 
     if (!avatarLocalPath) {
         throw new ApiError(400, 'Avatar file is required')
@@ -58,6 +58,9 @@ const registerUser = asyncHandler(async (req, res) => {
         username: username.toLowerCase()
     })
 
+    const createdUser1 = await User.findById(user?._id)
+    console.log('createdUser1', createdUser1)
+
     const createdUser = await User.findById(user?._id).select(
         "-password -refreshToken"
     );  // yha pe string me -ve sign ke sath jo b likhenge use remove kr dega
@@ -67,7 +70,7 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
     console.log('createdUser', createdUser);
-    
+
     return res.status(201).json(
         new ApiResponse(200, createdUser, 'User registered successfully!')
     )
