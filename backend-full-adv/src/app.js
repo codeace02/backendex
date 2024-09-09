@@ -1,6 +1,7 @@
 import express from "express";
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import bodyParser from "body-parser";
 
 const app = express();
 
@@ -18,6 +19,8 @@ app.use(express.urlencoded({ extended: true, limit: '16kb' }))
 app.use(express.static("public"));
 
 app.use(cookieParser()); // mere server se user k browser ki cookies ko access kr pau
+
+// app.use(bodyParser.json())
 
 // routes import
 
