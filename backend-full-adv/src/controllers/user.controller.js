@@ -240,7 +240,7 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
 
     const user = await User.findById(req?.user?._id);
 
-    const isPasswordCorrect = await user.isPasswordCorrect(oldPassword);
+    const isPasswordCorrect = await user.isPasswordCorrect(oldPassword); // returns true/false
 
     if (!isPasswordCorrect) {
         throw new ApiError(400, "Invalid old password!");
@@ -270,4 +270,33 @@ const getCurrentUser = asyncHandler(async (req, res) => {
         );
 })
 
-export { registerUser, loginUser, logoutUser, refreshAccessToken, changeCurrentPassword, getCurrentUser }
+const updateAccountDetails = asyncHandler(async (req, res) => {
+    const { fullName, email } = req?.body;
+
+    if (!fullName || !email) {
+        throw new ApiError(400, "All fields are required!")
+    }
+
+    const user = await User.findByIdAndUpdate(
+        req?.user?._id,
+        {
+            $set: {
+                fullName, //agr key nd upcoming key same h to ek hi bar likhne s kam ho jayega es6 syntax
+                email: email
+            }
+        },
+        { new: true }// isse update hone ke bad wali information return b ho jati h
+    ).select("-password")
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                user,
+                "Accont details updated successfully!"
+            )
+        )
+})
+
+export { registerUser, loginUser, logoutUser, refreshAccessToken, changeCurrentPassword, getCurrentUser, updateAccountDetails }
