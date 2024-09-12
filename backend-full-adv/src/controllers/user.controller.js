@@ -4,6 +4,7 @@ import { User } from "../models/user.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from 'jsonwebtoken';
+import mongoose from "mongoose";
 
 const generateAccessAndRefreshTokens = async (userId) => {
     try {
@@ -161,8 +162,12 @@ const logoutUser = asyncHandler(async (req, res) => {
         req.user?._id,
         {
             $set: {
-                refreshToken: undefined
+                refreshToken: undefined //or null
             }
+
+            // $unset:{
+            //      refreshToken:1 //if above fails then use this
+            // }
         },
         {
             new: true
@@ -234,9 +239,9 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
 
     const { oldPassword, newPassword, cnfPassword } = req?.body;
 
-    if (!(newPassword === cnfPassword)) {
-        throw new ApiError(400, "New password & confirm password must be same!")
-    }
+    // if (!(newPassword === cnfPassword)) {
+    //     throw new ApiError(400, "New password & confirm password must be same!")
+    // }
 
     const user = await User.findById(req?.user?._id);
 
@@ -263,17 +268,19 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
 const getCurrentUser = asyncHandler(async (req, res) => {
     return res
         .status(200)
-        .json(
+        .json(new ApiResponse(
             200,
             req.user,
             "Current user fetched successfully!"
-        );
+        ));
 })
 
 const updateAccountDetails = asyncHandler(async (req, res) => {
     const { fullName, email } = req?.body;
 
-    if (!fullName || !email) {
+    if (!fullName
+        //  || !email
+    ) {
         throw new ApiError(400, "All fields are required!")
     }
 
@@ -375,7 +382,7 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
         throw new ApiError(400, "username is missing!");
     }
 
-    const channel = await User?.aggregate([
+    const channel = await User.aggregate([
         {
             $match: {
                 username: username?.toLowerCase()
@@ -403,15 +410,16 @@ const getUserChannelProfile = asyncHandler(async (req, res) => {
                     $size: "$subscribers" //taken from 1st lookup & $ is used bcs it is a field nd iski value leni h hme
                 },
                 channelsSubscribedToCount: {
-                    $size: "subscribedTo"
+                    $size: "$subscribedTo"
                 },
                 isSubscribed: {
                     $cond: {
                         if: {
-                            in: [req?.user?._id, '$subscribers.subscriber'], // in arrays me b dekhta h & objectst me b
-                            then: true,
-                            else: false
-                        }
+                            $in: [new mongoose.Types.ObjectId(req?.user?._id), '$subscribers.subscriber'], // in arrays me b dekhta h & objectst me b
+                        },
+                        then: true,
+                        else: false
+
                     } // iske 3 conditions hote h a. if, b. then, c. else
                 }
             }
